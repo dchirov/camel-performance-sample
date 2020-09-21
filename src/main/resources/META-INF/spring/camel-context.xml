@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+    <context:component-scan base-package="org.example"/>
+
+    <camelContext xmlns="http://camel.apache.org/schema/spring" messageHistory="true">
+
+        <!-- Send provisioning requests in parallel by 10 producers -->
+        <route id="start">
+            <from uri="timer://startTimer?fixedRate=true&amp;repeatCount=10&amp;period=1"/>
+            <multicast parallelProcessing="true" streaming="true">
+                <to uri="direct:provisioning"/>
+                <to uri="direct:provisioning"/>
+                <to uri="direct:provisioning"/>
+                <to uri="direct:provisioning"/>
+                <to uri="direct:provisioning"/>
+                <to uri="direct:provisioning"/>
+                <to uri="direct:provisioning"/>
+                <to uri="direct:provisioning"/>
+                <to uri="direct:provisioning"/>
+                <to uri="direct:provisioning"/>
+            </multicast>
+        </route>
+
+        <!-- Update an exchange property and send the exchange to SEDA queue -->
+        <route id="provisioning">
+            <from uri="direct:provisioning"/>
+            <setProperty name="user">
+                <simple>${bean:myBean?method=getRandomUser}</simple>
+            </setProperty>
+            <to uri="seda:dataQueue?waitForTaskToComplete=Never&amp;size=10000"/>
+        </route>
+
+        <!-- Consume the messages from SEDA queue by 20 consumers -->
+        <route id="consumer">
+            <from uri="seda:dataQueue?concurrentConsumers=20"/>
+            <choice>
+                <when>
+                    <simple>${exchangeProperty.user.getName} != null &amp;&amp; ${exchangeProperty.user.getAge} > 11
+                    </simple>
+                    <setBody>
+                        <simple>${exchangeId}</simple>
+                    </setBody>
+                </when>
+                <otherwise>
+                    <setBody>
+                        <simple>${routeId}</simple>
+                    </setBody>
+                </otherwise>
+            </choice>
+            <log message="${messageHistory}" loggingLevel="INFO"/>
+        </route>
+    </camelContext>
+</beans>
