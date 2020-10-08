@@ -11,7 +11,7 @@ $ git clone https://github.com/dchirov/camel-performance-sample.git
 $ cd camel-performance-sample
 ```
 
-### Command line
+## Command line
 
 #### To build application on Unix
 ```bash
@@ -43,6 +43,6 @@ $ ./mvnw camel:run
 $ mvnw.cmd camel:run
 ```
 
-### Analysis
+## Analysis
 After downloading on a Windows platform the generated JFR file can be analyzed by:
 https://www.oracle.com/java/technologies/jdk-mission-control.html
