@@ -43,6 +43,6 @@ $ ./mvnw camel:run
 $ mvnw.cmd camel:run
 ```
 
-#### Analysis
+### Analysis
 After downloading on a Windows platform the generated JFR file can be analyzed by:
 https://www.oracle.com/java/technologies/jdk-mission-control.html
