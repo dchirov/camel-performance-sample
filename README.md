@@ -24,7 +24,7 @@ $ mvnw.cmd clean compile
 ```
 
 #### Java Flight Record configuration
-All required JVM parameters have been already set in _camel-performance-sample/jvm.config_ file:
+All required JVM parameters have been already set in _camel-performance-sample/.mvn/jvm.config_ file:
 ```bash
 -XX:FlightRecorderOptions=memorysize=50M,stackdepth=256 -XX:StartFlightRecording=disk=true,duration=1m,filename=application-recording.jfr,maxsize=100M
 ```
